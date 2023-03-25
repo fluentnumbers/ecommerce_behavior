@@ -20,7 +20,7 @@ variable "storage_class" {
   default = "STANDARD"
 }
 
-# BigQuery dataset name
+# BigQuery dataset name (alpha-numeric + underscores)
 variable "BQ_DATASET" {
   description = "BigQuery Dataset that raw data (from GCS) will be written to"
   type = string
