@@ -1,5 +1,5 @@
 locals {
-  data_lake_bucket = "ecommerce-behavior"  # Storage bucket name
+  data_lake_bucket = "ecommerce"  # Storage bucket name
 }
 
 # ProjectID must match your projectID (not project name!!!) in GCP (also available in your GCP auth .json file)
@@ -24,5 +24,5 @@ variable "storage_class" {
 variable "BQ_DATASET" {
   description = "BigQuery Dataset that raw data (from GCS) will be written to"
   type = string
-  default = "ecommerce-behavior"
+  default = "ecommerce"
 }
