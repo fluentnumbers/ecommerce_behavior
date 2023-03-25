@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+.idea/
+ecommerce-behavior-381716-8015d2562308.json
