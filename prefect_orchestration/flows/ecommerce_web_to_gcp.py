@@ -8,19 +8,9 @@ from prefect.tasks import task_input_hash
 from datetime import timedelta
 import calendar
 import os
-from utils.snippets import get_config
 
-cfg = get_config()
-PREFECT_BLOCKNAME_GCP_BUCKET = cfg['PREFECT_BLOCKNAME_GCP_BUCKET']
-KAGGLE_DATASET_PATH = cfg['KAGGLE_DATASET_PATH']
+from prefect_orchestration.flows import KAGGLE_DATASET_PATH, PREFECT_BLOCKNAME_GCP_BUCKET, PREFECT_BLOCKNAME_GCP_CREDENTIALS, GCP_BIGQUERY_DATASET,GCP_BIGQUERY_TABLE,GCP_PROJECT_ID
 
-# yearmonth2filename = {
-#                       "2019_10":"2019-Oct.csv",
-#                       "2019_11":"2019-Nov.csv",
-#                       "2019_12":"2019-Dec.csv",
-#                       "2020_01":"2020-Jan.csv",
-#                       "2020_02":"2020-Feb.csv",
-#                       }
 
 # @task(retries=1)
 def fetch(local_path: str):
@@ -72,12 +62,10 @@ def etl_web_to_gcs(year: int, month: int, ) -> None:
     os.remove(local_parquet)
 
 
-@flow(name="web_to_gcp_bucket_parent_flow")
+@flow(name="web_to_gcp_parent_flow")
 def web_to_gcp_parent_flow(
-    months: list[int], year: int,
+    months: list[int]=[11], year: int=2019,
 ):
-    # assert all([f"{year}_{m}" in yearmonth2filename.keys() for m in months]), \
-        # f"Only {yearmonth2filename.keys()} year-month combinations available"
     for month in months:
         etl_web_to_gcs(year, month, )
 

@@ -1,15 +1,21 @@
 ###
-### A complete description of a Prefect Deployment for flow 'web_to_gcp_parent_flow'
+### A complete description of a Prefect Deployment for flow 'gcp_to_bq_parent_flow'
 ###
-name: web to GCP
-description: null
-version: daa4045fbdfb080ae7e611ad4c3011f4
+name: GCP to BQ
+description: Main ETL flow to load data into Big Query
+version: 40a4bf6b5359851ca402133e1475297e
 # The work queue that will handle this deployment's runs
 work_queue_name: default
 tags: []
 parameters: {}
 schedule: null
 infra_overrides: {}
+
+###
+### DO NOT EDIT BELOW THIS LINE
+###
+flow_name: gcp_to_bq_parent_flow
+manifest_path: null
 infrastructure:
   type: process
   env: {}
@@ -18,17 +24,14 @@ infrastructure:
   command: null
   stream_output: true
   working_dir: null
+  _block_document_id: ca3f8a85-395c-4a9c-aae6-6bebfe7a7da1
+  _block_document_name: anonymous-a7ac6e43-bc55-4d94-9e22-c566c90500f4
+  _is_anonymous: true
   block_type_slug: process
   _block_type_slug: process
-
-###
-### DO NOT EDIT BELOW THIS LINE
-###
-flow_name: web_to_gcp_parent_flow
-manifest_path: null
 storage: null
 path: /home/fn/ecommerce_behavior
-entrypoint: prefect_orchestration/flows/ecommerce_web_to_gcp.py:web_to_gcp_parent_flow
+entrypoint: prefect_orchestration/flows/ecommerce_gcp_to_bq.py:gcp_to_bq_parent_flow
 parameter_openapi_schema:
   title: Parameters
   type: object
