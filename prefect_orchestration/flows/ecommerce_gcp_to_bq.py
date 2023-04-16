@@ -1,11 +1,11 @@
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 import pandas as pd
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
 from prefect_gcp import GcpCredentials
 import calendar
-from prefect_orchestration.flows import PREFECT_BLOCKNAME_GCP_BUCKET, PREFECT_BLOCKNAME_GCP_CREDENTIALS, GCP_BIGQUERY_DATASET,GCP_BIGQUERY_TABLE,GCP_PROJECT_ID
+from prefect_orchestration.flows import PREFECT_BLOCKNAME_GCP_BUCKET, PREFECT_BLOCKNAME_GCP_CREDENTIALS, GCP_BIGQUERY_DATASET,GCP_BIGQUERY_TABLE,GCP_PROJECT_ID, year_months_combinations
 
 @task(retries=3,name='extract_from_gcs',log_prints=True)
 def extract_from_gcs(year: int, month: int) -> Path:
@@ -21,6 +21,8 @@ def extract_from_gcs(year: int, month: int) -> Path:
 def read(path: Path) -> pd.DataFrame:
     """Data cleaning example"""
     df = pd.read_parquet(path,)
+    df=df.dropna(subset=['user_session'], how='any')
+    df['brand'] = df['brand'].fillna('Not defined')
     # print(f"pre: missing passenger count: {df['passenger_count'].isna().sum()}")
     # df["passenger_count"].fillna(0, inplace=True)
     # print(f"post: missing passenger count: {df['passenger_count'].isna().sum()}")
@@ -43,15 +45,17 @@ def write_bq(df: pd.DataFrame) -> None:
 
 
 @flow(name="gcp_to_bq_parent_flow")
-def gcp_to_bq_parent_flow(months:List[int]=[11],year:int=2019):
+def gcp_to_bq_parent_flow(year_months_combinations:Dict[int,List[int]]=dict([(2019,[10,11,12]),(2020,[1,2])])):
     """Main ETL flow to load data into Big Query"""
-    for month in months:
-        path = extract_from_gcs(year, month)
-        df = read(path)
-        write_bq(df)
+    for year in year_months_combinations.keys():
+        for month in year_months_combinations[year]:
+            path = extract_from_gcs(year, month)
+            df = read(path)
+            write_bq(df)
 
 
 if __name__ == "__main__":
-    months = [12]
-    year = 2019
-    gcp_to_bq_parent_flow(months=months,year=year)
+    year_months = dict([(2019,[10,11,12]),(2020,[1,2])])
+    # year_months = dict([(2020,[1,2])])
+    year_months = year_months_combinations
+    gcp_to_bq_parent_flow(year_months)

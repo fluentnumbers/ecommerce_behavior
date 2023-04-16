@@ -3,7 +3,7 @@
 ###
 name: GCP to BQ
 description: Main ETL flow to load data into Big Query
-version: 40a4bf6b5359851ca402133e1475297e
+version: b1e06f1c158416ba0ae48ca1d03a0e31
 # The work queue that will handle this deployment's runs
 work_queue_name: default
 tags: []
@@ -36,18 +36,21 @@ parameter_openapi_schema:
   title: Parameters
   type: object
   properties:
-    months:
-      title: months
+    year_months_combinations:
+      title: year_months_combinations
       default:
-      - 11
+        '2019':
+        - 10
+        - 11
+        - 12
+        '2020':
+        - 1
+        - 2
       position: 0
-      type: array
-      items:
-        type: integer
-    year:
-      title: year
-      default: 2019
-      position: 1
-      type: integer
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: integer
   required: null
   definitions: null

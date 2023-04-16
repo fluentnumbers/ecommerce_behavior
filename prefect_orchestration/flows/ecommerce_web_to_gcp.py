@@ -1,5 +1,6 @@
 
 from pathlib import Path
+from typing import Dict, List
 import pandas as pd
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
@@ -9,8 +10,7 @@ from datetime import timedelta
 import calendar
 import os
 
-from prefect_orchestration.flows import KAGGLE_DATASET_PATH, PREFECT_BLOCKNAME_GCP_BUCKET, PREFECT_BLOCKNAME_GCP_CREDENTIALS, GCP_BIGQUERY_DATASET,GCP_BIGQUERY_TABLE,GCP_PROJECT_ID
-
+from prefect_orchestration.flows import KAGGLE_DATASET_PATH, PREFECT_BLOCKNAME_GCP_BUCKET, PREFECT_BLOCKNAME_GCP_CREDENTIALS, GCP_BIGQUERY_DATASET,GCP_BIGQUERY_TABLE,GCP_PROJECT_ID, year_months_combinations
 
 # @task(retries=1)
 def fetch(local_path: str):
@@ -21,6 +21,7 @@ def fetch(local_path: str):
 @task(log_prints=True)
 def clean(df: pd.DataFrame,) -> pd.DataFrame:
     """Fix dtype issues"""
+    df['event_time'] = pd.to_datetime(df['event_time'], format="%Y-%m-%d %H:%M:%S %Z", utc=True)
     print(f"columns: {df.dtypes}")
     print(f"rows: {len(df)}")
     return df
@@ -64,13 +65,15 @@ def etl_web_to_gcs(year: int, month: int, ) -> None:
 
 @flow(name="web_to_gcp_parent_flow")
 def web_to_gcp_parent_flow(
-    months: list[int]=[11], year: int=2019,
+    year_months_combinations:Dict[int,List[int]]=dict([(2019,[10,11,12]),(2020,[1,2])])
 ):
-    for month in months:
-        etl_web_to_gcs(year, month, )
+    for year in year_months_combinations.keys():
+        for month in year_months_combinations[year]:
+            etl_web_to_gcs(year, month, )
 
 
 if __name__ == "__main__":
-    months = [11]
-    year = 2019
-    web_to_gcp_parent_flow(months, year, )
+    year_months = dict([(2019,[10,11,12]),(2020,[1,2])])
+    # year_months = dict([(2020,[1,2])])
+    year_months = year_months_combinations
+    web_to_gcp_parent_flow(year_months)
