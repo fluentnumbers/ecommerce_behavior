@@ -56,5 +56,6 @@ def gcp_to_bq_parent_flow(year_months_combinations:Dict[int,List[int]]=dict([(20
 
 if __name__ == "__main__":
     year_months = dict([(2019,[10,11,12]),(2020,[1,2])])
+    # year_months = dict([(2020,[1,2])])
     year_months = year_months_combinations
     gcp_to_bq_parent_flow(year_months)
