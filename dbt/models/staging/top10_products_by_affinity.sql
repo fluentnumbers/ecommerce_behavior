@@ -1,4 +1,10 @@
--- Top 10 products with High Product Affinity(which products are purchased at the same time)
+-- Top 10 products with High Product Affinity(which products are purchased at the same
+-- time)
+{{
+    config(
+        materialized="table",
+    )
+}}
 select t1.product_id as first_pid, t2.product_id as second_pid, count(1) as cnt
 from
     (
