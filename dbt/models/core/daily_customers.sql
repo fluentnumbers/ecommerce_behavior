@@ -9,7 +9,7 @@ with
         select
             format_date("%y-%m-%d", event_time) as day,
             count(distinct user_id) as daily_visitor
-        from {{ source("ecommerce-behavior", "data") }}
+        from {{ ref("data_clustered") }}
         group by day
     )
 select *
