@@ -5,6 +5,6 @@
     )
 }}
 select format_date('%H', event_time) as hour, sum(price) as revenue
-from {{ source("staging", "data") }}
+from {{ source("ecommerce-behavior", "data") }}
 where event_type = 'purchase'
 group by hour

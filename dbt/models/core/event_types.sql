@@ -13,7 +13,7 @@ from
             lead(event_type, 1) over (
                 partition by user_id order by event_time
             ) as after_event
-        from {{ source("staging", "data") }}
+        from {{ source("ecommerce-behavior", "data") }}
     ) as t
 where after_event = 'purchase'
 group by before_event

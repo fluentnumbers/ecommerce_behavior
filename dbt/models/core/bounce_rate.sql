@@ -14,7 +14,7 @@ from
             lead(event_time) over (
                 partition by user_session order by event_time
             ) as after_event_time
-        from {{ source("staging", "data") }}
+        from {{ source("ecommerce-behavior", "data") }}
     ) as t
 where after_event_time is null
 group by day

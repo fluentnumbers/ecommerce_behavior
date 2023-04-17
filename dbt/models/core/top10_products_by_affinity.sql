@@ -1,4 +1,4 @@
--- Top 10 products with High Product Affinity(which products are purchased at the same
+-- Top 10 products with High Product Affinity (which products are purchased at the same
 -- time)
 {{
     config(
@@ -9,7 +9,7 @@ select t1.product_id as first_pid, t2.product_id as second_pid, count(1) as cnt
 from
     (
         select user_session, product_id
-        from {{ source("staging", "data") }}
+        from {{ source("ecommerce-behavior", "data") }}
         where event_type = 'purchase'
         group by user_session, product_id
     ) as t1
@@ -17,7 +17,7 @@ from
 inner join
     (
         select user_session, product_id
-        from {{ source("staging", "data") }}
+        from {{ source("ecommerce-behavior", "data") }}
         where event_type = 'purchase'
         group by user_session, product_id
     ) as t2
