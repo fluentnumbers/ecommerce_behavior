@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: staging
+    database: ecommerce-behavior-381716
+    schema: ecommerce
+    tables:
+      - name: data
+models:
+  - name: draft
