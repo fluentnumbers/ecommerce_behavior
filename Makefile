@@ -44,7 +44,7 @@ vm_install_terraform:
 
 
 # copy gcp creds
-# copy kaggle creds
+# copy kaggle creds, dbt as json
 # pip clone
 # install anaconda, docker, compose,
 # install req

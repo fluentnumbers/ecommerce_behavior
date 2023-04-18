@@ -4,6 +4,7 @@ from prefect_gcp.cloud_storage import GcsBucket
 from prefect.filesystems import GitHub
 from prefect.infrastructure.docker import DockerContainer
 import os
+from prefect_dbt.cloud import DbtCloudCredentials
 
 from dotenv import load_dotenv
 
@@ -16,6 +17,11 @@ PREFECT_BLOCKNAME_GCP_CREDENTIALS = os.environ.get('PREFECT_BLOCKNAME_GCP_CREDEN
 PREFECT_BLOCKNAME_GCP_BUCKET = os.environ.get('PREFECT_BLOCKNAME_GCP_BUCKET')
 PREFECT_BLOCKNAME_DOCKER = os.environ.get('PREFECT_BLOCKNAME_DOCKER')
 PREFECT_BLOCKNAME_GITHUB = os.environ.get('PREFECT_BLOCKNAME_GITHUB')
+PREFECT_BLOCKNAME_DBT = os.environ.get('PPREFECT_BLOCKNAME_DBT')
+
+
+DBT_USER_ID = os.environ.get('DBT_USER_ID')
+DBT_CREDENTIALS_PATH = os.environ.get('DBT_CREDENTIALS_PATH')
 
 GITHUB_REPO_PATH = os.environ.get('GITHUB_REPO_PATH')
 
@@ -56,3 +62,15 @@ docker_block = DockerContainer(
 
 docker_block.save(PREFECT_BLOCKNAME_DOCKER, overwrite=True)
 print(f"Created Docker block named {PREFECT_BLOCKNAME_DOCKER}")
+
+
+# alternative to creating DBT block in the UI
+with open(DBT_CREDENTIALS_PATH, 'r') as creds:
+    dbt_api = json.load(creds)
+
+credentials_block = DbtCloudCredentials(
+        api_key=dbt_api['api'],
+        account_id=DBT_USER_ID
+    )
+credentials_block.save(PREFECT_BLOCKNAME_DBT, overwrite=True)
+print(f"Created DBT block named {PREFECT_BLOCKNAME_DBT}")
