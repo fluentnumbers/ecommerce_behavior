@@ -1,8 +1,8 @@
 from prefect.deployments import Deployment
 from prefect.infrastructure.docker import DockerContainer
-from prefect_orchestration.flows import PREFECT_BLOCKNAME_DOCKER
+from flows import PREFECT_BLOCKNAME_DOCKER
 
-from prefect_orchestration.flows.ecommerce_web_to_gcp import web_to_gcp_parent_flow
+from flows.flow_web_to_gcp import web_to_gcp_parent_flow
 
 
 docker_block = DockerContainer.load(PREFECT_BLOCKNAME_DOCKER)
