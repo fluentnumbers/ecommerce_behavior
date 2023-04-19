@@ -5,7 +5,9 @@ export
 
 
 export $(shell jq -r 'to_entries|map("KAGGLE_\(.key|ascii_upcase)=\(.value|tostring)")|.[]' ${KAGGLE_CREDENTIALS_PATH})
-export $(shell jq -r 'to_entries|map("DBT_\(.key|ascii_upcase)=\(.value|tostring)")|.[]' ${DBT_CREDENTIALS_PATH})
+ifneq ("$(wildcard $(DBT_CREDENTIALS_PATH))","")
+	export $(shell jq -r 'to_entries|map("DBT_\(.key|ascii_upcase)=\(.value|tostring)")|.[]' ${DBT_CREDENTIALS_PATH})
+endif
 .PHONY: print_vars
 print_vars:
 	@echo "KAGGLE_USERNAME = ${KAGGLE_USERNAME}"
