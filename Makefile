@@ -16,6 +16,8 @@ print_vars:
 TF_VAR_project = ${GCP_PROJECT_ID}
 TF_VAR_region = $(GCP_REGION)
 TF_VAR_BQ_DATASET = $(GCP_BIGQUERY_DATASET)
+TF_VAR_BQ_DATASET_DBT_DEV = $(DBT_DEV_DATASET_NAME)
+TF_VAR_BQ_DATASET_DBT_PROD = $(DBT_PROD_DATASET_NAME)
 TF_VAR_data_lake_bucket = $(GCP_BUCKETNAME)
 
 GOOGLE_APPLICATION_CREDENTIALS = ${GCP_CREDENTIALS_PATH}
@@ -30,10 +32,11 @@ REPO_DIR = ${PWD}
 test:
 	echo ${KAGGLE_KEY}
 
-# vm_install_anaconda:
-# 	wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh
-# 	bash Anaconda3-2022.10-Linux-x86_64.sh
-# 	source .bashrc
+vm_install_anaconda:
+	cd /home/$(USER);\
+	wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh;\
+	bash Anaconda3-2022.10-Linux-x86_64.sh;\
+	source .bashrc
 
 # vm_install_docker:
 # 	sudo apt-get install docker.io;\
@@ -71,11 +74,14 @@ vm_setup:
 	cd /home/$(USER)/;\
 	sudo apt-get update -y;\
 	sudo apt-get install unzip;\
+	sudo apt-get install wget;\
 	cd $(REPO_DIR);\
-	$(MAKE) vm_install_terraform
+	$(MAKE) vm_install_terraform;\
+	@gcloud auth activate-service-account --key-file ${GOOGLE_APPLICATION_CREDENTIALS};\
 
-
-	@gcloud auth activate-service-account --key-file ${GOOGLE_APPLICATION_CREDENTIALS}
+	conda create -n <my-env-name>;\
+	conda install python=3.10;\
+	pip install -r requirements.txt;\
 
 
 
@@ -86,8 +92,8 @@ terraform_setup:
 	@echo "Initialiaze GCP infrastructure"
 	cd terraform; \
 	terraform init; \
-	# terraform plan; \
-	# terraform apply --auto-approve;
+	terraform plan; \
+	terraform apply --auto-approve;
 
 
 
@@ -95,7 +101,8 @@ terraform_setup:
 ################# PREFECT
 ##############################################
 prefect_start_ui:
-	@echo "prefect orion start"
+	@echo "prefect orion start";\
+	@prefect config set PREFECT_API_URL=http://localhost:4200/api;\
 	@prefect orion start;
 
 prefect_create_blocks:
@@ -118,5 +125,7 @@ prefect_run_web2gcp:
 	prefect deployment run "web_to_gcp_parent_flow/web to GCP" 	 --param year_months_combinations='{"2019": [ 10, 11, 12 ], "2020": [ 1, 2 ]}'	
 
 prefect_run_gcp2bq:
-		prefect deployment run "gcp_to_bq_parent_flow/GCP to BQ" --param year_months_combinations='{"2019": [ 10, 11, 12 ], "2020": [ 1, 2 ]}'	
+	prefect deployment run "gcp_to_bq_parent_flow/GCP to BQ" --param year_months_combinations='{"2019": [ 10, 11, 12 ], "2020": [ 1, 2 ]}'
+
+# prefect_run_deployments: prefect_run_web2gcp prefect_run_gcp2bq	
 
