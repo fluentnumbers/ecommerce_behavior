@@ -49,7 +49,8 @@ vm_install_terraform:
 	mkdir bin;\
 	cd bin;\
 	wget https://releases.hashicorp.com/terraform/1.3.9/terraform_1.3.9_linux_amd64.zip;\
-	unzip -o terraform_1.3.9_linux_amd64.zip
+	unzip -o terraform_1.3.9_linux_amd64.zip;\
+	rm terraform_1.3.9_linux_amd64.zip
 
 
 # vm_install_docker_compose:
@@ -75,11 +76,7 @@ vm_setup:
 	sudo apt-get install wget;\
 	cd $(REPO_DIR);\
 	$(MAKE) vm_install_terraform;\
-	@gcloud auth activate-service-account --key-file ${GOOGLE_APPLICATION_CREDENTIALS};\
-
-	conda create -n <my-env-name>;\
-	conda install python=3.10;\
-	pip install -r requirements.txt;\
+	gcloud auth activate-service-account --key-file ${GOOGLE_APPLICATION_CREDENTIALS};\
 
 
 
