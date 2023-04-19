@@ -55,20 +55,22 @@ gh_block.save(PREFECT_BLOCKNAME_GITHUB, overwrite=True)
 print(f"Created Github block named {PREFECT_BLOCKNAME_GITHUB}")
 
 # alternative to creating DockerContainer block in the UI
-docker_block = DockerContainer(
-    image=f"{DOCKER_USERNAME}/{DOCKER_IMAGE}",  # insert your image here
-    image_pull_policy="ALWAYS",
-    auto_remove=True,
-)
+if False:  # currently not in use
+    docker_block = DockerContainer(
+        image=f"{DOCKER_USERNAME}/{DOCKER_IMAGE}",  # insert your image here
+        image_pull_policy="ALWAYS",
+        auto_remove=True,
+    )
 
-docker_block.save(PREFECT_BLOCKNAME_DOCKER, overwrite=True)
-print(f"Created Docker block named {PREFECT_BLOCKNAME_DOCKER}")
+    docker_block.save(PREFECT_BLOCKNAME_DOCKER, overwrite=True)
+    print(f"Created Docker block named {PREFECT_BLOCKNAME_DOCKER}")
 
 
 # alternative to creating DBT block in the UI
-credentials_block = DbtCloudCredentials(
-        api_key=DBT_KEY,
-        account_id=DBT_USER_ID
-    )
-credentials_block.save(PREFECT_BLOCKNAME_DBT, overwrite=True)
-print(f"Created DBT block named {PREFECT_BLOCKNAME_DBT}")
+if False:  # currently not in use
+    credentials_block = DbtCloudCredentials(
+            api_key=DBT_KEY,
+            account_id=DBT_USER_ID
+        )
+    credentials_block.save(PREFECT_BLOCKNAME_DBT, overwrite=True)
+    print(f"Created DBT block named {PREFECT_BLOCKNAME_DBT}")

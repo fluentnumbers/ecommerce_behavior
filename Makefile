@@ -23,14 +23,12 @@ TF_VAR_data_lake_bucket = $(GCP_BUCKETNAME)
 GOOGLE_APPLICATION_CREDENTIALS = ${GCP_CREDENTIALS_PATH}
 
 REPO_DIR = ${PWD}
-# export $(echo $values | jq -r 'to_entries|map("KAGGLE_\(.key|ascii_upcase)=\(.value|tostring)")|.[]' ${KAGGLE_CREDENTIALS_PATH})
-# for s in $(jq -r 'to_entries|map("KAGGLE_\(.key|ascii_upcase)=\(.value|tostring)")|.[]' ${KAGGLE_CREDENTIALS_PATH} ); do export '%s\n' "$s"; done
 
 
 #######################################################################
 
 test:
-	echo ${KAGGLE_KEY}
+	echo ${KAGGLE_USERNAME}
 
 vm_install_anaconda:
 	cd /home/$(USER);\
