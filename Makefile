@@ -3,6 +3,14 @@ SHELL := /bin/bash
 include .env
 export
 
+
+export $(shell jq -r 'to_entries|map("KAGGLE_\(.key|ascii_upcase)=\(.value|tostring)")|.[]' ${KAGGLE_CREDENTIALS_PATH})
+export $(shell jq -r 'to_entries|map("DBT_\(.key|ascii_upcase)=\(.value|tostring)")|.[]' ${DBT_CREDENTIALS_PATH})
+.PHONY: print_vars
+print_vars:
+	@echo "KAGGLE_USERNAME = ${KAGGLE_USERNAME}"
+	@echo "KAGGLE_KEY = ${KAGGLE_KEY}"
+
 .EXPORT_ALL_VARIABLES:
 
 TF_VAR_project = ${GCP_PROJECT_ID}
@@ -13,8 +21,14 @@ TF_VAR_data_lake_bucket = $(GCP_BUCKETNAME)
 GOOGLE_APPLICATION_CREDENTIALS = ${GCP_CREDENTIALS_PATH}
 
 REPO_DIR = ${PWD}
+# export $(echo $values | jq -r 'to_entries|map("KAGGLE_\(.key|ascii_upcase)=\(.value|tostring)")|.[]' ${KAGGLE_CREDENTIALS_PATH})
+# for s in $(jq -r 'to_entries|map("KAGGLE_\(.key|ascii_upcase)=\(.value|tostring)")|.[]' ${KAGGLE_CREDENTIALS_PATH} ); do export '%s\n' "$s"; done
+
+
 #######################################################################
 
+test:
+	echo ${KAGGLE_KEY}
 
 # vm_install_anaconda:
 # 	wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh

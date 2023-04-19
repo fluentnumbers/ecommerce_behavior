@@ -21,6 +21,7 @@ PREFECT_BLOCKNAME_DBT = os.environ.get('PPREFECT_BLOCKNAME_DBT')
 
 
 DBT_USER_ID = os.environ.get('DBT_USER_ID')
+DBT_KEY = os.environ.get('DBT_KEY')
 DBT_CREDENTIALS_PATH = os.environ.get('DBT_CREDENTIALS_PATH')
 
 GITHUB_REPO_PATH = os.environ.get('GITHUB_REPO_PATH')
@@ -65,11 +66,8 @@ print(f"Created Docker block named {PREFECT_BLOCKNAME_DOCKER}")
 
 
 # alternative to creating DBT block in the UI
-with open(DBT_CREDENTIALS_PATH, 'r') as creds:
-    dbt_api = json.load(creds)
-
 credentials_block = DbtCloudCredentials(
-        api_key=dbt_api['api'],
+        api_key=DBT_KEY,
         account_id=DBT_USER_ID
     )
 credentials_block.save(PREFECT_BLOCKNAME_DBT, overwrite=True)
