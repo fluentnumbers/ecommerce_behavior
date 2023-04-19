@@ -4,14 +4,14 @@ include .env
 export
 
 
-export $(shell jq -r 'to_entries|map("KAGGLE_\(.key|ascii_upcase)=\(.value|tostring)")|.[]' ${KAGGLE_CREDENTIALS_PATH})
 ifneq ("$(wildcard $(DBT_CREDENTIALS_PATH))","")
 	export $(shell jq -r 'to_entries|map("DBT_\(.key|ascii_upcase)=\(.value|tostring)")|.[]' ${DBT_CREDENTIALS_PATH})
 endif
-.PHONY: print_vars
-print_vars:
-	@echo "KAGGLE_USERNAME = ${KAGGLE_USERNAME}"
-	@echo "KAGGLE_KEY = ${KAGGLE_KEY}"
+# export $(shell jq -r 'to_entries|map("KAGGLE_\(.key|ascii_upcase)=\(.value|tostring)")|.[]' ${KAGGLE_CREDENTIALS_PATH})
+# .PHONY: print_vars
+# print_vars:
+#	 @echo "KAGGLE_USERNAME = ${KAGGLE_USERNAME}"
+#	 @echo "KAGGLE_KEY = ${KAGGLE_KEY}"
 
 .EXPORT_ALL_VARIABLES:
 
@@ -99,8 +99,8 @@ terraform_setup:
 ##############################################
 prefect_start_ui:
 	@echo "prefect orion start";\
-	@prefect config set PREFECT_API_URL=http://localhost:4200/api;\
-	@prefect orion start;
+	prefect config set PREFECT_API_URL=http://localhost:4200/api;\
+	prefect orion start;
 
 prefect_create_blocks:
 	@echo "Initialiaze prefect blocks"
@@ -108,11 +108,11 @@ prefect_create_blocks:
 
 prefect_build_deployment:
 	@echo "Initialize prefect deployment"
-	@prefect deployment build flows/flow_web_to_gcp.py:web_to_gcp_parent_flow -n "web to GCP"
-	@prefect deployment build flows/flow_gcp_to_bq.py:gcp_to_bq_parent_flow -n "GCP to BQ"
+	prefect deployment build flows/flow_web_to_gcp.py:web_to_gcp_parent_flow -n "web to GCP"
+	prefect deployment build flows/flow_gcp_to_bq.py:gcp_to_bq_parent_flow -n "GCP to BQ"
 
-	@prefect deployment apply web_to_gcp_parent_flow-deployment.yaml
-	@prefect deployment apply gcp_to_bq_parent_flow-deployment.yaml
+	prefect deployment apply web_to_gcp_parent_flow-deployment.yaml
+	prefect deployment apply gcp_to_bq_parent_flow-deployment.yaml
 
 prefect_agent_start:
 	@echo "Start prefect agent"

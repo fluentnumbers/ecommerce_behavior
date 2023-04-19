@@ -12,6 +12,7 @@ load_dotenv()
 
 GCP_CREDENTIALS_PATH = os.environ.get('GCP_CREDENTIALS_PATH')
 GCP_BUCKETNAME = os.environ.get('GCP_BUCKETNAME')
+GCP_PROJECT_ID = os.environ.get('GCP_PROJECT_ID')
 
 PREFECT_BLOCKNAME_GCP_CREDENTIALS = os.environ.get('PREFECT_BLOCKNAME_GCP_CREDENTIALS')
 PREFECT_BLOCKNAME_GCP_BUCKET = os.environ.get('PREFECT_BLOCKNAME_GCP_BUCKET')
@@ -42,7 +43,7 @@ print(f"Created GCP credentials block named {PREFECT_BLOCKNAME_GCP_CREDENTIALS}"
 
 bucket_block = GcsBucket(
     gcp_credentials=GcpCredentials.load(PREFECT_BLOCKNAME_GCP_CREDENTIALS),
-    bucket=GCP_BUCKETNAME,  # insert your  GCS bucket name
+    bucket=f"{GCP_BUCKETNAME}_{GCP_PROJECT_ID}",  # insert your  GCS bucket name
 )
 
 bucket_block.save(PREFECT_BLOCKNAME_GCP_BUCKET, overwrite=True)
