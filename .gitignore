@@ -131,3 +131,7 @@ dmypy.json
 .idea/
 ecommerce-behavior-381716-8015d2562308.json
 docker_access_token
+/terraform/.terraform
+/terraform/terraform.tfstate
+/terraform/.terraform-version
+/terraform/.terraform.lock.hcl

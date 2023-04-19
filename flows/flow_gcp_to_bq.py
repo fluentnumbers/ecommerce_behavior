@@ -5,7 +5,31 @@ from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
 from prefect_gcp import GcpCredentials
 import calendar
-from prefect_orchestration.flows import PREFECT_BLOCKNAME_GCP_BUCKET, PREFECT_BLOCKNAME_GCP_CREDENTIALS, GCP_BIGQUERY_DATASET,GCP_BIGQUERY_TABLE,GCP_PROJECT_ID, year_months_combinations
+import os
+from flows import year_months_combinations
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+GCP_BIGQUERY_DATASET = os.environ.get('GCP_BIGQUERY_DATASET')
+GCP_BIGQUERY_TABLE = os.environ.get('GCP_BIGQUERY_TABLE')
+GCP_PROJECT_ID = os.environ.get('GCP_PROJECT_ID')
+
+PREFECT_BLOCKNAME_GCP_CREDENTIALS = os.environ.get('PREFECT_BLOCKNAME_GCP_CREDENTIALS')
+PREFECT_BLOCKNAME_GCP_BUCKET = os.environ.get('PREFECT_BLOCKNAME_GCP_BUCKET')
+PREFECT_BLOCKNAME_DOCKER = os.environ.get('PREFECT_BLOCKNAME_DOCKER')
+PREFECT_BLOCKNAME_GITHUB = os.environ.get('PREFECT_BLOCKNAME_GITHUB')
+
+GITHUB_REPO_PATH = os.environ.get('GITHUB_REPO_PATH')
+
+DOCKER_USERNAME = os.environ.get('DOCKER_USERNAME')
+DOCKER_IMAGE = os.environ.get('DOCKER_IMAGE')
+
+KAGGLE_DATASET_PATH = os.environ.get('KAGGLE_DATASET_PATH')
+
+
+
 
 @task(retries=3,name='extract_from_gcs',log_prints=True)
 def extract_from_gcs(year: int, month: int) -> Path:

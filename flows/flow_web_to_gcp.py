@@ -9,8 +9,27 @@ from prefect.tasks import task_input_hash
 from datetime import timedelta
 import calendar
 import os
+from flows import year_months_combinations
 
-from prefect_orchestration.flows import KAGGLE_DATASET_PATH, PREFECT_BLOCKNAME_GCP_BUCKET, PREFECT_BLOCKNAME_GCP_CREDENTIALS, GCP_BIGQUERY_DATASET,GCP_BIGQUERY_TABLE,GCP_PROJECT_ID, year_months_combinations
+from dotenv import load_dotenv
+
+load_dotenv()
+
+GCP_CREDENTIALS_PATH = os.environ.get('GCP_CREDENTIALS_PATH')
+GCP_BUCKETNAME = os.environ.get('GCP_BUCKETNAME')
+
+PREFECT_BLOCKNAME_GCP_CREDENTIALS = os.environ.get('PREFECT_BLOCKNAME_GCP_CREDENTIALS')
+PREFECT_BLOCKNAME_GCP_BUCKET = os.environ.get('PREFECT_BLOCKNAME_GCP_BUCKET')
+PREFECT_BLOCKNAME_DOCKER = os.environ.get('PREFECT_BLOCKNAME_DOCKER')
+PREFECT_BLOCKNAME_GITHUB = os.environ.get('PREFECT_BLOCKNAME_GITHUB')
+
+GITHUB_REPO_PATH = os.environ.get('GITHUB_REPO_PATH')
+
+DOCKER_USERNAME = os.environ.get('DOCKER_USERNAME')
+DOCKER_IMAGE = os.environ.get('DOCKER_IMAGE')
+
+KAGGLE_DATASET_PATH = os.environ.get('KAGGLE_DATASET_PATH')
+
 
 # @task(retries=1)
 def fetch(local_path: str):
@@ -22,8 +41,8 @@ def fetch(local_path: str):
 def clean(df: pd.DataFrame,) -> pd.DataFrame:
     """Fix dtype issues"""
     df['event_time'] = pd.to_datetime(df['event_time'], format="%Y-%m-%d %H:%M:%S %Z", utc=True)
-    print(f"columns: {df.dtypes}")
-    print(f"rows: {len(df)}")
+    # print(f"columns: {df.dtypes}")
+    # print(f"rows: {len(df)}")
     return df
 
 
