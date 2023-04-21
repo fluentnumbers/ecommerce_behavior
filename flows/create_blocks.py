@@ -12,6 +12,7 @@ load_dotenv()
 
 GCP_CREDENTIALS_PATH = os.environ.get('GCP_CREDENTIALS_PATH')
 GCP_BUCKETNAME = os.environ.get('GCP_BUCKETNAME')
+GCP_PROJECT_ID = os.environ.get('GCP_PROJECT_ID')
 
 PREFECT_BLOCKNAME_GCP_CREDENTIALS = os.environ.get('PREFECT_BLOCKNAME_GCP_CREDENTIALS')
 PREFECT_BLOCKNAME_GCP_BUCKET = os.environ.get('PREFECT_BLOCKNAME_GCP_BUCKET')
@@ -42,7 +43,7 @@ print(f"Created GCP credentials block named {PREFECT_BLOCKNAME_GCP_CREDENTIALS}"
 
 bucket_block = GcsBucket(
     gcp_credentials=GcpCredentials.load(PREFECT_BLOCKNAME_GCP_CREDENTIALS),
-    bucket=GCP_BUCKETNAME,  # insert your  GCS bucket name
+    bucket=f"{GCP_BUCKETNAME}_{GCP_PROJECT_ID}",  # insert your  GCS bucket name
 )
 
 bucket_block.save(PREFECT_BLOCKNAME_GCP_BUCKET, overwrite=True)
@@ -55,20 +56,22 @@ gh_block.save(PREFECT_BLOCKNAME_GITHUB, overwrite=True)
 print(f"Created Github block named {PREFECT_BLOCKNAME_GITHUB}")
 
 # alternative to creating DockerContainer block in the UI
-docker_block = DockerContainer(
-    image=f"{DOCKER_USERNAME}/{DOCKER_IMAGE}",  # insert your image here
-    image_pull_policy="ALWAYS",
-    auto_remove=True,
-)
+if False:  # currently not in use
+    docker_block = DockerContainer(
+        image=f"{DOCKER_USERNAME}/{DOCKER_IMAGE}",  # insert your image here
+        image_pull_policy="ALWAYS",
+        auto_remove=True,
+    )
 
-docker_block.save(PREFECT_BLOCKNAME_DOCKER, overwrite=True)
-print(f"Created Docker block named {PREFECT_BLOCKNAME_DOCKER}")
+    docker_block.save(PREFECT_BLOCKNAME_DOCKER, overwrite=True)
+    print(f"Created Docker block named {PREFECT_BLOCKNAME_DOCKER}")
 
 
 # alternative to creating DBT block in the UI
-credentials_block = DbtCloudCredentials(
-        api_key=DBT_KEY,
-        account_id=DBT_USER_ID
-    )
-credentials_block.save(PREFECT_BLOCKNAME_DBT, overwrite=True)
-print(f"Created DBT block named {PREFECT_BLOCKNAME_DBT}")
+if False:  # currently not in use
+    credentials_block = DbtCloudCredentials(
+            api_key=DBT_KEY,
+            account_id=DBT_USER_ID
+        )
+    credentials_block.save(PREFECT_BLOCKNAME_DBT, overwrite=True)
+    print(f"Created DBT block named {PREFECT_BLOCKNAME_DBT}")

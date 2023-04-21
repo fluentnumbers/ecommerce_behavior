@@ -23,3 +23,15 @@ variable "BQ_DATASET" {
   description = "BigQuery Dataset that raw data (from GCS) will be written to"
   type = string
 }
+
+# BigQuery dataset name (alpha-numeric + underscores)
+variable "BQ_DATASET_DBT_DEV" {
+  description = "BigQuery Dataset where the DBT development models will write into"
+  type = string
+}
+
+# BigQuery dataset name (alpha-numeric + underscores)
+variable "BQ_DATASET_DBT_PROD" {
+  description = "BigQuery Dataset where the DBT deployment models will write into"
+  type = string
+}
