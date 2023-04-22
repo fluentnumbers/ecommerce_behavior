@@ -1,7 +1,6 @@
 # eCommerce cosmetic shop customer data analysis
 
 # Problem description
-
 ![Untitled](assets/Untitled.png)
 
 Any eCommerce company acquires, transforms and stores lots of data about their customers behavior while they are browsing, purchasing, paying for the products, etc. All information is collected real-time.
@@ -20,17 +19,17 @@ Each row in the file represents an event. All events are related to products and
 
 ## File structure
 
-| Property | Description                                                                                                                                                       || 
-| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------|    
-| event_time | Time when event happened at (in UTC).                                                                                                                            |    
-| event_type | purchase / cart /  view / remove_from_cart / purchase                                                                                                            |    
-| product_id | ID of a product.                                                                                                                                                 |    
-| category_id | Product's category ID.                                                                                                                                           |    
-| category_code | Product's category taxonomy (code name) if it was possible to make it. Usually present for meaningful categories and skipped for different kinds of accessories. |  
-| brand | Brand name. Can be missing.                                                                                                                                      |    
-| price | Float price of a product.                                                                                                                                        |    
-| user_id | Permanent user ID.                                                                                                                                               |   
-| user_session | Temporary user's session ID. Same for each user's session. Is changed every time user come back to online store from a long pause.                               |  
+| Property             | Description                                                                                                                                                      |
+|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|    
+| event_time           | Time when event happened at (in UTC).                                                                                                                            |    
+| event_type           | purchase / cart /  view / remove_from_cart / purchase                                                                                                            |    
+| product_id           | ID of a product.                                                                                                                                                 |    
+| category_id          | Product's category ID.                                                                                                                                           |    
+| category_code        | Product's category taxonomy (code name) if it was possible to make it. Usually present for meaningful categories and skipped for different kinds of accessories. |  
+| brand                | Brand name. Can be missing.                                                                                                                                      |    
+| price                | Float price of a product.                                                                                                                                        |    
+| user_id              | Permanent user ID.                                                                                                                                               |   
+| user_session         | Temporary user's session ID. Same for each user's session. Is changed every time user come back to online store from a long pause.                               |  
 
 # Objective
 
@@ -53,7 +52,7 @@ Develop an end-to-end data ingestion, processing and analysis pipeline including
 - Data Build Tool (dbt) ****to transform data and create new high-level tables
 - Google Looker Studio: create and host dashboards and reports.
 
-![Untitled](assets/Untitled 1.png)
+![Untitled](assets/Untitled_1.png)
 
 # How to reproduce the project
 
@@ -74,39 +73,39 @@ Prerequisites:
 
 [https://console.cloud.google.com/projectcreate](https://console.cloud.google.com/projectcreate)
 
-![Untitled](assets/Untitled 2.png)
+![Untitled](assets/Untitled_2.png)
 
 ### Create a service account
 
-![Untitled](assets/Untitled 3.png)
+![Untitled](assets/Untitled_3.png)
 
-![Untitled](assets/Untitled 4.png)
+![Untitled](assets/Untitled_4.png)
 
 Necessary access rights: *storage admin, bigquery, storage object admin*
 
-![Untitled](assets/Untitled%205.png)
+![Untitled](assets/Untitled_5.png)
 
-![Untitled](assets/Untitled%206.png)
+![Untitled](assets/Untitled_6.png)
 
 Create an API key for the service account. 
 
-![Untitled](assets/Untitled%207.png)
+![Untitled](assets/Untitled_7.png)
 
 Save generated key as json file: `ecommerce-behavior-381716-8015d2562308.json` 
 Put generated file somewhere, but make sure not to commit it accidentally to your repo (add to .gitignore). Later we will copy these credentials to the VM.
 
-![Untitled](assets/Untitled%208.png)
+![Untitled](assets/Untitled_8.png)
 
 ### Create a Compute Instance \ Virtual Machine (VM)
 
 Go to Compute Engine API and enable it if not active yet.
 
-![Untitled](assets/Untitled%209.png)
+![Untitled](assets/Untitled_9.png)
 
 Create a new VM. I called the VM `vm-ecommerce-behavior`.
 Choose suitable compute resources (≥8 Gb RAM), region\zone.
 
-![Untitled](assets/Untitled%2010.png)
+![Untitled](assets/Untitled_10.png)
 
 Setup the boot disk: 
 
@@ -118,9 +117,9 @@ Size: 40GB
 
 </aside>
 
-![Untitled](assets/Untitled%2011.png)
+![Untitled](assets/Untitled_11.png)
 
-![Untitled](assets/Untitled%2012.png)
+![Untitled](assets/Untitled_12.png)
 
 ## Setup remote access to your VM
 
@@ -135,18 +134,18 @@ In the terminal run:
 
 This will create a public (gcp.pub) and private (gcp) key-files in your *~/.ssh* directory
 
-![Untitled](assets/Untitled%2013.png)
+![Untitled](assets/Untitled_13.png)
 
 ### Add the **public** key to the Compute Engine metadata
 
-![Untitled](assets/Untitled%2014.png)
+![Untitled](assets/Untitled_14.png)
 
 ### Get the VM external IP
 
 Go to the VM, check the check box and press start if it's not already running.
 Copy the External IP address that is displayed once it starts: 34.141.225.195
 
-![Untitled](assets/Untitled%2015.png)
+![Untitled](assets/Untitled_15.png)
 
 ### Update/create a config file in your local ~/.ssh directory
 
@@ -194,15 +193,15 @@ First need to convert SSH keys to the PuTTy format
 
 Puttygen > Import Key > select private key >saveprivate key > name : *_ppk.ppk
 
-![Untitled](assets/Untitled%2016.png)
+![Untitled](assets/Untitled_16.png)
 
 ### Remote development with PyCharm
 
-![Untitled](assets/Untitled%2017.png)
+![Untitled](assets/Untitled_17.png)
 
-![Untitled](assets/Untitled%2018.png)
+![Untitled](assets/Untitled_18.png)
 
-![Untitled](assets/Untitled%2019.png)
+![Untitled](assets/Untitled_19.png)
 
 ## Setup the VM environment
 
@@ -216,7 +215,7 @@ Puttygen > Import Key > select private key >saveprivate key > name : *_ppk.ppk
 
 Go to your kaggle account settings and download a token as *kaggle.json*
 
-![Untitled](assets/Untitled%2020.png)
+![Untitled](assets/Untitled_20.png)
 
 **locally** `cd` to the folder with *kaggle.json* 
 
@@ -283,13 +282,13 @@ After all is set:
 
 You should see lots of outputs
 
-![Untitled](assets/Untitled%2021.png)
+![Untitled](assets/Untitled_21.png)
 
-![Untitled](assets/Untitled%2022.png)
+![Untitled](assets/Untitled_22.png)
 
 `gcloud auth application-default login` and follow instructions to authorize
 
-![Untitled](assets/Untitled%2023.png)
+![Untitled](assets/Untitled_23.png)
 
 ## Prefect deployments setup
 
@@ -313,7 +312,7 @@ You can now access Prefect UI in your [http://localhost:4200/](http://localhost:
 
 Raw data converted to .parquet should appear in the GCP bucket:
 
-![Untitled](assets/Untitled%2024.png)
+![Untitled](assets/Untitled_24.png)
 
 **Wait until it is finished copying files to GCP.**
 
@@ -321,7 +320,7 @@ Raw data converted to .parquet should appear in the GCP bucket:
 
 Same data joined into one table should appear in your BigQuery:
 
-![Untitled](assets/Untitled%2025.png)
+![Untitled](assets/Untitled_25.png)
 
 ## Transform data with DBT cloud
 
@@ -329,38 +328,38 @@ Same data joined into one table should appear in your BigQuery:
 
 Create a project **ecommerce** with Project subdirectory **dbt:**
 
-![Untitled](assets/Untitled%2026.png)
+![Untitled](assets/Untitled_26.png)
 
 Select BigQuery as a Database Connection:
 
-![Untitled](assets/Untitled%2027.png)
+![Untitled](assets/Untitled_27.png)
 
 Upload GCP service account `ecommerce-behavior-381716-8015d2562308.json` file:
 
-![Untitled](assets/Untitled%2028.png)
+![Untitled](assets/Untitled_28.png)
 
 Define the name for the BigQuery dataset where the development results will appear: **dbt_dev**  ****(or whatever is set in our .*env* file)
 
-![Untitled](assets/Untitled%2029.png)
+![Untitled](assets/Untitled_29.png)
 
 When later DBT models are run in development environment, this dataset will be created (if not existing already). Though, it will be created with default Region and other settings, so it is recommended to pre-create a **dbt_dev** dataset in BQ in the same location as the original dataset with data (europe-west4). If `make terraform_setup` step was done correctly, then the dataset already exists.
 
-![Untitled](assets/Untitled%2030.png)
+![Untitled](assets/Untitled_30.png)
 
 Select git clone and paste the SSH key `git@github.com:fluentnumbers/ecommerce_behavior.git` from the repo.
 
-![Untitled](assets/Untitled%2031.png)
+![Untitled](assets/Untitled_31.png)
 
 You will get to see a deploy key, copy it and head to your Github repo >> settings tab>>Security>>Deploy keys. Add the copied key and check the mark “Allow write access”:
 
-![Untitled](assets/Untitled%2032.png)
+![Untitled](assets/Untitled_32.png)
 
 Go to DBT, change branch to *dbtdev*  and start developing additinal models if needed. 
 Current models are quite simplistic as the focus was not on the data analytics, but on the DE part. There is table partitioning step by month and clustering by user-id. It seems that total queries execution time improves, but can be that not all queries benefit from partitioning. 
 
  
 
-![Untitled](assets/Untitled%2033.png)
+![Untitled](assets/Untitled_33.png)
 
 ## Create production environment
 
@@ -370,7 +369,7 @@ Therefore we create a Deployment environment in *Deploy>>Environments* and the o
 
 By default deployment runs are executed for the main branch, so make sure to merge necessary changes from the development.
 
-![Untitled](assets/Untitled%2034.png)
+![Untitled](assets/Untitled_34.png)
 
 Also create a deployment job in *Deploy>>Jobs>Create Job*:
 Select Production environment, *dbt build* as a command, press *Save.*
@@ -379,7 +378,7 @@ Select Production environment, *dbt build* as a command, press *Save.*
 
 *Deploy>>Jobs>>Create job*
 
-![Untitled](assets/Untitled%2035.png)
+![Untitled](assets/Untitled_35.png)
 
 One can now trigger the job manually, using predefined schedule, etc.
 
@@ -387,7 +386,7 @@ One can now trigger the job manually, using predefined schedule, etc.
 
 Go to *Deploy>>Jobs* and run “Production run”. Once the job is finished successfully you should see new tables in your BigQuery **dbt_prod** dataset.
 
-![Untitled](assets/Untitled%2036.png)
+![Untitled](assets/Untitled_36.png)
 
 ## Dashboard
 
