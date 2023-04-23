@@ -4,6 +4,6 @@
         materialized="table",
     )
 }}
-select format_date('%m-%d', event_time) as day, count(distinct user_id) as daily_visitor
+select CAST(event_time as date) as day, count(distinct user_id) as daily_visitor
 from {{ ref("data_clustered") }}
 group by day
