@@ -391,6 +391,9 @@ Go to *Deploy>>Jobs* and run “Production run”. Once the job is finished succ
 ## Dashboard
 
 Go to [https://lookerstudio.google.com/](https://lookerstudio.google.com/), authorize BigQuery usage and compose a dashboard from available tables.
+Mine draft dashboard is available here: https://lookerstudio.google.com/reporting/8b14d1fc-321b-4987-93f7-66d895a4394c
+![image](https://user-images.githubusercontent.com/124727429/233851856-2034d871-f886-4dc8-9cfc-1e486fecf453.png)
+
 
 # Future work
 
