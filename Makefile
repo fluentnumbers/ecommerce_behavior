@@ -32,6 +32,22 @@ REPO_DIR = ${PWD}
 test:
 	echo ${DOCKER_VOLUME_PATH}
 
+
+
+
+
+
+#############################################
+################# VM ENVIRONMENT
+##############################################
+vm_install_terraform:
+	cd /home/$(USER);\
+	mkdir bin;\
+	cd bin;\
+	wget https://releases.hashicorp.com/terraform/1.3.9/terraform_1.3.9_linux_amd64.zip;\
+	unzip -o terraform_1.3.9_linux_amd64.zip;\
+	rm terraform_1.3.9_linux_amd64.zip
+
 vm_install_anaconda:
 	cd /home/$(USER);\
 	wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh;\
@@ -43,41 +59,18 @@ vm_install_docker:
 	sudo apt-get install docker.io -y;\
 	sudo groupadd docker;\
 	sudo gpasswd -a ${USER} docker
-# RESTART
-# RESTAAAAAAAAAAAAAAAAAAAAART
-# sudo service docker restart
+	sudo service docker restart
 
+# make vm_install_docker_compose
+vm_install_docker_compose:
+	sudo apt install docker docker-compose python3-pip make -y
+	sudo chmod 666 /var/run/docker.sock
 
 vm-setupdocker:
 	sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 	sudo chmod +x /usr/local/bin/docker-compose
 	docker-compose --version
 
-# vm_install_docker_compose:
-# 	sudo apt install docker docker-compose python3-pip make -y
-# 	sudo chmod 666 /var/run/docker.sock
-
-vm_install_terraform:
-	cd /home/$(USER);\
-	mkdir bin;\
-	cd bin;\
-	wget https://releases.hashicorp.com/terraform/1.3.9/terraform_1.3.9_linux_amd64.zip;\
-	unzip -o terraform_1.3.9_linux_amd64.zip;\
-	rm terraform_1.3.9_linux_amd64.zip
-
-
-
-
-# copy gcp creds
-# copy kaggle creds, dbt as json
-# pip clone
-# install anaconda, docker, compose,
-# install req
-
-
-#############################################
-################# VM ENVIRONMENT
-##############################################
 vm_setup:
 	cd /home/$(USER)/;\
 	sudo apt-get update -y;\
@@ -85,8 +78,9 @@ vm_setup:
 	sudo apt-get install wget;\
 	cd $(REPO_DIR);\
 	$(MAKE) vm_install_terraform;\
+	$(MAKE) vm_install_docker;\
+	$(MAKE) vm_install_docker_compose;\
 	gcloud auth activate-service-account --key-file ${GOOGLE_APPLICATION_CREDENTIALS};\
-
 
 
 #############################################
@@ -98,9 +92,6 @@ terraform_setup:
 	terraform init; \
 	terraform plan; \
 	terraform apply --auto-approve;
-
-
-
 
 #############################################
 ################# Docker
@@ -135,13 +126,10 @@ docker_remove_all:
 #############################################
 ################# PREFECT
 ##############################################
-
-
-
 # make prefect_server_up
 prefect_server_up:
 	docker-compose --profile server up --detach
-	@echo "Orion is up, accessible via http://localhost:4200/"
+	@echo "Orion is up: http://localhost:4200/"
 	@echo "Start agent with 'make prefect_agent_start'"
 
 # make prefect_agent_up
@@ -153,27 +141,26 @@ prefect_agent_up:
 # make prefect_create_blocks
 prefect_create_blocks:
 	docker-compose run job-python flows/create_blocks.py
-	@echo "Initialiaze prefect blocks"
+	@echo "Initialiaze prefect blocks: http://localhost:4200/blocks"
+	@echo "Build and apply deployments by 'make prefect_build_deployments'"
 
 # make prefect_build_deployments
 prefect_build_deployments:
-	@echo "Initialize prefect deployment flows/flow_web_to_gcp.py"
 	docker-compose run job-prefect deployment build flows/flow_web_to_gcp.py:web_to_gcp_parent_flow -n "web to GCP"
 	docker-compose run job-prefect deployment apply web_to_gcp_parent_flow-deployment.yaml
+	@echo "Initialized prefect deployment flows/flow_web_to_gcp.py"
 
-	@echo "Initialize prefect deployment flows/flow_gcp_to_bq.py"
 	docker-compose run job-prefect deployment build flows/flow_gcp_to_bq.py:gcp_to_bq_parent_flow -n "GCP to BQ"
 	docker-compose run job-prefect deployment apply gcp_to_bq_parent_flow-deployment.yaml
+	@echo "Initialized prefect deployment flows/flow_gcp_to_bq.py"
 
-prefect_agent_start:
-	@echo "Start prefect agent"
-	prefect agent start --work-queue "default"
+	@echo "Run deployment to upload data from Kaggle to Google Storage: 'make prefect_run_web2gcp'"
 
 prefect_run_web2gcp: 
 	prefect deployment run "web_to_gcp_parent_flow/web to GCP" 	 --param year_months_combinations='{"2019": [ 10, 11, 12 ], "2020": [ 1, 2 ]}'	
+	@echo "Runnning flows/flow_web_to_gcp..."
 
 prefect_run_gcp2bq:
 	prefect deployment run "gcp_to_bq_parent_flow/GCP to BQ" --param year_months_combinations='{"2019": [ 10, 11, 12 ], "2020": [ 1, 2 ]}'
-
-# prefect_run_deployments: prefect_run_web2gcp prefect_run_gcp2bq	
+	@echo "Runnning flows/flow_gco_to_bq..."
 
