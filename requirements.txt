@@ -1,3 +1,4 @@
+fastparquet==2023.2.0
 pandas==1.5.2
 prefect==2.7.7
 prefect-sqlalchemy==0.2.2

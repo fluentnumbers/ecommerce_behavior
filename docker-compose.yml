@@ -1,0 +1,86 @@
+version: "3.9"
+services:
+  ### Prefect Server API and UI
+  server:
+    image: python_prefect_dbt
+    network_mode: host
+    restart: always
+    volumes:
+      - prefect_volume:/root/prefect-docker-compose
+    entrypoint: ["/opt/prefect/entrypoint.sh", "prefect", "orion", "start"]
+    environment:
+      # If you want to access Prefect Server from anywhere other than the Docker host machine, you will need to change
+      # PREFECT_UI_URL to match the external hostname/IP used to load the UI in your web browser.
+      - PREFECT_UI_URL=http://127.0.0.0:4200/api
+      - PREFECT_API_URL=http://127.0.0.1:4200/api
+      - PREFECT_SERVER_API_HOST=0.0.0.0
+    ports:
+      - 4200:4200
+    # depends_on:
+      # - database
+    profiles: ["server"]
+
+    
+  ## Prefect Agent
+  agent:
+    image: python_prefect_dbt
+    network_mode: host
+    restart: always
+    volumes:
+      - prefect_volume:/root/prefect-docker-compose
+    entrypoint: [ "prefect", "agent", "start", "-q", "default" ]
+    environment:
+      - PREFECT_API_URL=http://localhost:4200/api
+      - PREFECT_LOCAL_STORAGE_PATH=prefect_volume:/root/prefect-docker-compose
+      # Use PREFECT_API_KEY if connecting the agent to Prefect Cloud
+      # - PREFECT_API_KEY=${Prefect_API_KEY}
+    profiles: ["agent"]
+
+    ### Prefect CLI
+  cli:
+    image: python_prefect_dbt
+    network_mode: host
+    entrypoint: "bash"
+    working_dir: /root/prefect-docker-compose
+    volumes:
+      - prefect_volume:/root/prefect-docker-compose
+    environment:
+      - PREFECT_API_URL=http://localhost:4200/api
+#       Use PREFECT_API_KEY to use the CLI to interact with Prefect Cloud
+#     - PREFECT_API_KEY=YOUR_API_KEY
+    profiles: ["cli"]
+
+  job-python:
+    image: python_prefect_dbt
+    network_mode: host
+    entrypoint: [ "python3" ]
+    working_dir: /root/prefect-docker-compose
+    volumes:
+      - prefect_volume:/root/prefect-docker-compose
+    environment:
+      - PREFECT_API_URL=http://localhost:4200/api
+      - PREFECT_LOCAL_STORAGE_PATH=prefect_volume:/root/prefect-docker-compose
+      # - PREFECT_API_KEY=${Prefect_API_KEY}
+    profiles: ["job"]
+
+  job-prefect:
+    image: python_prefect_dbt
+    network_mode: host
+    entrypoint: [ "prefect" ]
+    working_dir: /root/prefect-docker-compose
+    volumes:
+      - prefect_volume:/root/prefect-docker-compose
+    environment:
+      - PREFECT_API_URL=http://localhost:4200/api
+      - PREFECT_LOCAL_STORAGE_PATH=prefect_volume:/root/prefect-docker-compose
+      # - PREFECT_API_KEY=${Prefect_API_KEY}
+    profiles: ["jobp"]
+
+volumes:
+  prefect_volume: 
+    name: prefect_volume
+    driver_opts:
+      type: none
+      o: bind
+      # path-to-repo with ./flows/ (/home/${USER}/ecommerce_behavior/)
+      device: ${DOCKER_VOLUME_PATH}

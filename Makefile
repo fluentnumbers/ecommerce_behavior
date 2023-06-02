@@ -1,4 +1,4 @@
-SHELL := /bin/bash
+HELL := /bin/bash
 
 include .env
 export
@@ -30,7 +30,7 @@ REPO_DIR = ${PWD}
 #######################################################################
 
 test:
-	echo ${KAGGLE_USERNAME}
+	echo ${DOCKER_VOLUME_PATH}
 
 vm_install_anaconda:
 	cd /home/$(USER);\
@@ -38,13 +38,24 @@ vm_install_anaconda:
 	bash Anaconda3-2022.10-Linux-x86_64.sh;\
 	source .bashrc
 
-# vm_install_docker:
-# 	sudo apt-get install docker.io;\
-# 	sudo groupadd docker;\
-# 	sudo gpasswd -a ${USER} docker;\
-# 	RESTART
-# 	# RESTAAAAAAAAAAAAAAAAAAAAART
-# 	# sudo service docker restart
+# make vm_install_docker
+vm_install_docker:
+	sudo apt-get install docker.io -y;\
+	sudo groupadd docker;\
+	sudo gpasswd -a ${USER} docker
+# RESTART
+# RESTAAAAAAAAAAAAAAAAAAAAART
+# sudo service docker restart
+
+
+vm-setupdocker:
+	sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+	sudo chmod +x /usr/local/bin/docker-compose
+	docker-compose --version
+
+# vm_install_docker_compose:
+# 	sudo apt install docker docker-compose python3-pip make -y
+# 	sudo chmod 666 /var/run/docker.sock
 
 vm_install_terraform:
 	cd /home/$(USER);\
@@ -55,10 +66,6 @@ vm_install_terraform:
 	rm terraform_1.3.9_linux_amd64.zip
 
 
-# vm_install_docker_compose:
-# 	sudo apt-get update -y
-# 	sudo apt install docker docker-compose python3-pip make -y
-# 	sudo chmod 666 /var/run/docker.sock
 
 
 # copy gcp creds
@@ -94,25 +101,69 @@ terraform_setup:
 
 
 
+
+#############################################
+################# Docker
+##############################################
+
+# make docker_build_image
+docker_build_image:
+	docker build --no-cache --network=host -f dockerfile -t python_prefect_dbt .
+
+# make docker_clean
+docker_clean:
+	docker-compose down --remove-orphans
+
+# make docker_remove_all
+docker_remove_all:
+	if [ -n "$$(docker ps -aq)" ]; then \
+		docker rm $$(docker ps -aq); \
+	else \
+		echo "No containers found."; \
+	fi
+	if [ -n "$$(docker images -aq)" ]; then \
+		docker rmi $$(docker images -aq); \
+	else \
+		echo "No images found."; \
+	fi
+	if [ -n "$$(docker images -aq)" ]; then \
+		docker volume rm $(docker volume ls -q) \
+	else \
+		echo "No images found."; \
+	fi
+
 #############################################
 ################# PREFECT
 ##############################################
-prefect_start_ui:
-	@echo "prefect orion start";\
-	prefect config set PREFECT_API_URL=http://localhost:4200/api;\
-	prefect orion start;
 
+
+
+# make prefect_server_up
+prefect_server_up:
+	docker-compose --profile server up --detach
+	@echo "Orion is up, accessible via http://localhost:4200/"
+	@echo "Start agent with 'make prefect_agent_start'"
+
+# make prefect_agent_up
+prefect_agent_up:
+	docker-compose --profile agent up --detach
+	@echo "Prefect agent is up, listening to queue 'default'"
+	@echo "Create necessary Prefect blocks by 'make prefect_create_blocks'"
+
+# make prefect_create_blocks
 prefect_create_blocks:
+	docker-compose run job-python flows/create_blocks.py
 	@echo "Initialiaze prefect blocks"
-	@python flows/create_blocks.py
 
-prefect_build_deployment:
-	@echo "Initialize prefect deployment"
-	prefect deployment build flows/flow_web_to_gcp.py:web_to_gcp_parent_flow -n "web to GCP"
-	prefect deployment build flows/flow_gcp_to_bq.py:gcp_to_bq_parent_flow -n "GCP to BQ"
+# make prefect_build_deployments
+prefect_build_deployments:
+	@echo "Initialize prefect deployment flows/flow_web_to_gcp.py"
+	docker-compose run job-prefect deployment build flows/flow_web_to_gcp.py:web_to_gcp_parent_flow -n "web to GCP"
+	docker-compose run job-prefect deployment apply web_to_gcp_parent_flow-deployment.yaml
 
-	prefect deployment apply web_to_gcp_parent_flow-deployment.yaml
-	prefect deployment apply gcp_to_bq_parent_flow-deployment.yaml
+	@echo "Initialize prefect deployment flows/flow_gcp_to_bq.py"
+	docker-compose run job-prefect deployment build flows/flow_gcp_to_bq.py:gcp_to_bq_parent_flow -n "GCP to BQ"
+	docker-compose run job-prefect deployment apply gcp_to_bq_parent_flow-deployment.yaml
 
 prefect_agent_start:
 	@echo "Start prefect agent"

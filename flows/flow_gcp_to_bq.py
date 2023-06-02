@@ -6,7 +6,7 @@ from prefect_gcp.cloud_storage import GcsBucket
 from prefect_gcp import GcpCredentials
 import calendar
 import os
-from flows import year_months_combinations
+from flows import all_year_months_combinations
 
 from dotenv import load_dotenv
 
@@ -58,7 +58,7 @@ def write_bq(df: pd.DataFrame) -> None:
 
 
 @flow(name="gcp_to_bq_parent_flow")
-def gcp_to_bq_parent_flow(year_months_combinations: Dict[int, List[int]] = dict([(2019, [10, 11, 12]), (2020, [1, 2])])):
+def gcp_to_bq_parent_flow(year_months_combinations: Dict[int, List[int]] = all_year_months_combinations):
     """Main ETL flow to load data into Big Query"""
     for year in year_months_combinations.keys():
         for month in year_months_combinations[year]:
@@ -68,7 +68,6 @@ def gcp_to_bq_parent_flow(year_months_combinations: Dict[int, List[int]] = dict(
 
 
 if __name__ == "__main__":
-    year_months = dict([(2019, [10, 11, 12]), (2020, [1, 2])])
-    # year_months = dict([(2020,[1,2])])
-    year_months = year_months_combinations
-    gcp_to_bq_parent_flow(year_months)
+    # deploy()
+    selected_year_months = all_year_months_combinations
+    gcp_to_bq_parent_flow(selected_year_months)
